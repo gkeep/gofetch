@@ -2,10 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/klauspost/cpuid"
 	"os"
+	"os/exec"
 	"os/user"
-	"runtime"
+	"strings"
+
+	"github.com/bclicn/color"
+	"github.com/klauspost/cpuid"
 )
 
 func get_hostname() string {
@@ -39,10 +42,23 @@ func get_desktop_env() string {
 }
 
 func get_cpu() string {
-	cores_count := runtime.NumCPU()
 	cpu_name := cpuid.CPU.BrandName
+	cpu_name = strings.Replace(cpu_name, "(R)", "", -1)
+	cpu_name = strings.Replace(cpu_name, "(TM)", "", -1)
 
-	return fmt.Sprint(cpu_name, " x", cores_count)
+	return fmt.Sprint(cpu_name)
+}
+
+func get_distro() string {
+	command := exec.Command("/usr/bin/lsb_release", "-i")
+
+	distro, err := command.Output()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	distro = distro[16:] // strip "Distributor ID:"
+	return string(distro)
 }
 
 func main() {
@@ -50,8 +66,10 @@ func main() {
 	host := get_hostname()
 	desktop_environment := get_desktop_env()
 	cpu := get_cpu()
+	distro := get_distro()
 
-	fmt.Printf("host: %s@%s\n", user, host)
+	fmt.Printf("distro: %s", color.Red(distro))
+	fmt.Printf("host: %s@%s\n", color.Red(user), color.Red(host))
 	fmt.Printf("de: %s\n", desktop_environment)
 	fmt.Printf("cpu: %s\n", cpu)
 }

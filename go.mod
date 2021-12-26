@@ -1,4 +1,4 @@
-module github.com/gkeep/gofetch
+module gitlab.com/gofetch/gofetch
 
 go 1.16
 

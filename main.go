@@ -22,17 +22,28 @@ type Colors struct {
 }
 
 func load_config() Config {
-	f, err := os.Open("cfg.yml")
+	var cfg Config
+	file := "cfg.yml"
+	f, err := os.Open(file)
+
+	if os.IsNotExist(err) {
+		cfg.Separator = ":"
+		return cfg
+	}
+
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer f.Close()
 
-	var cfg Config
 	decoder := yaml.NewDecoder(f)
 	err = decoder.Decode(&cfg)
 	if err != nil {
 		fmt.Println(err)
+	}
+
+	if cfg.Separator == "" {
+		cfg.Separator = ":"
 	}
 
 	return cfg

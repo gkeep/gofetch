@@ -1,6 +1,7 @@
 .PHONY: install-cfg build install
 
 build:
+	mkdir -p build/
 	go build -o build
 
 run:

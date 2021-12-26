@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
@@ -97,14 +98,26 @@ func get_cpu(clrs Colors) (string, Colors) {
 }
 
 func get_distro() string {
-	command := exec.Command("/usr/bin/lsb_release", "-i", "-s")
-
-	output, err := command.Output()
+	file, err := os.Open("/etc/os-release")
 	if err != nil {
 		fmt.Println(err)
 	}
+	defer file.Close()
 
-	return strings.Replace(string(output), "\n", "", -1)
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
+	var distro string
+
+	for scanner.Scan() {
+		text := scanner.Text()
+
+		if strings.HasPrefix(text, "ID=") {
+			distro = text[3:]
+			break
+		}
+	}
+
+	return distro
 }
 
 func get_uptime() string {

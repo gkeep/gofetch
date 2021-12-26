@@ -1,4 +1,7 @@
-.PHONY: install-cfg build install
+.PHONY: build install run install-cfg
+
+all:
+	make build
 
 build:
 	mkdir -p build/

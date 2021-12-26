@@ -19,6 +19,14 @@ type Colors struct {
 	cpu       string
 }
 
+type Info struct {
+	user        string
+	host        string
+	cpu         string
+	uptime      string
+	desktop_env string
+}
+
 func load_config() Config {
 	var cfg Config
 
@@ -77,6 +85,7 @@ func main() {
 	config := load_config()
 	distro := get_distro()
 
+	var data Info
 	var colors Colors
 
 	if config.Distro != "" {

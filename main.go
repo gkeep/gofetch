@@ -18,8 +18,9 @@ type Config struct {
 }
 
 type Colors struct {
-	main string
-	cpu  string
+	main      string
+	secondary string
+	cpu       string
 }
 
 func load_config() Config {
@@ -136,11 +137,14 @@ func get_colors(distro string) Colors {
 
 	switch strings.ToLower(distro) {
 	case "debian":
-		clrs.main = "\033[31m" // red
+		clrs.main = "\033[31m"     // red
+		clrs.secondary = "\033[1m" // white
 	case "arch":
-		clrs.main = "\033[1;34m" // light blue
+		clrs.main = "\033[36m" // light blue
+		clrs.secondary = "\033[1m"
 	case "fedora":
-		clrs.main = "\033[34m" // blue
+		clrs.main = "\033[34m"      // blue
+		clrs.secondary = "\033[35m" // purple
 	}
 
 	return clrs
@@ -170,9 +174,26 @@ func main() {
 	cpu, colors := get_cpu(colors)
 	uptime := get_uptime()
 
-	fmt.Printf("distro %s %s\n", config.Separator, color_print(colors.main, distro))
-	fmt.Printf("host %s %s@%s\n", config.Separator, color_print(colors.main, user), color_print(colors.main, host))
-	fmt.Printf("de %s %s\n", config.Separator, desktop_environment)
-	fmt.Printf("cpu %s %s\n", config.Separator, color_print(colors.cpu, cpu))
-	fmt.Printf("uptime %s %s\n", config.Separator, uptime)
+	info_list := [5]string{"distro", "host", "de", "cpu", "uptime"}
+
+	for i := 0; i < 5; i++ {
+		var template string
+
+		switch info_list[i] {
+		case "distro":
+			template = color_print(colors.main, distro)
+		case "host":
+			template = fmt.Sprintf("%s@%s", color_print(colors.main, user), color_print(colors.main, host))
+		case "de":
+			template = desktop_environment
+		case "cpu":
+			template = color_print(colors.cpu, cpu)
+		case "uptime":
+			template = uptime
+		}
+
+		fmt.Printf("%s %s %s\n", color_print(colors.secondary, info_list[i]),
+			config.Separator, template)
+	}
+
 }

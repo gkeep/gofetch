@@ -81,6 +81,19 @@ func color_print(color string, text string) string {
 	return fmt.Sprintf("%s%s%s", color, text, col_reset)
 }
 
+func fetch() (Info, string) {
+	var data Info
+	var cpu_color string
+
+	data.user = get_username()
+	data.host = get_hostname()
+	data.desktop_env = get_desktop_env()
+	data.cpu, cpu_color = get_cpu()
+	data.uptime = get_uptime()
+
+	return data, cpu_color
+}
+
 func main() {
 	config := load_config()
 	distro := get_distro()
@@ -94,11 +107,8 @@ func main() {
 		colors = get_colors(distro)
 	}
 
-	user := get_username()
-	host := get_hostname()
-	desktop_environment := get_desktop_env()
-	cpu, colors := get_cpu(colors)
-	uptime := get_uptime()
+	data, cpu_color := fetch()
+	colors.cpu = cpu_color
 
 	info_list := [5]string{"distro", "host", "de", "cpu", "uptime"}
 
@@ -109,13 +119,13 @@ func main() {
 		case "distro":
 			template = color_print(colors.main, distro)
 		case "host":
-			template = fmt.Sprintf("%s@%s", color_print(colors.main, user), color_print(colors.main, host))
+			template = fmt.Sprintf("%s@%s", color_print(colors.main, data.user), color_print(colors.main, data.host))
 		case "de":
-			template = desktop_environment
+			template = data.desktop_env
 		case "cpu":
-			template = color_print(colors.cpu, cpu)
+			template = color_print(colors.cpu, data.cpu)
 		case "uptime":
-			template = uptime
+			template = data.uptime
 		}
 
 		fmt.Printf("%s %s %s\n", color_print(colors.secondary, info_list[i]),

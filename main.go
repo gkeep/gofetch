@@ -85,7 +85,7 @@ func get_cpu(clrs Colors) (string, Colors) {
 	cpu_name = strings.Replace(cpu_name, "(TM)", "", -1)
 
 	switch cpuid.CPU.VendorString {
-	case "Intel":
+	case "GenuineIntel":
 		clrs.cpu = "\033[34m"
 	case "AuthenticAMD":
 		clrs.cpu = "\033[31m"

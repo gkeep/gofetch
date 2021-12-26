@@ -97,15 +97,14 @@ func get_cpu(clrs Colors) (string, Colors) {
 }
 
 func get_distro() string {
-	command := exec.Command("/usr/bin/lsb_release", "-i")
+	command := exec.Command("/usr/bin/lsb_release", "-i", "-s")
 
-	distro, err := command.Output()
+	output, err := command.Output()
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	distro = distro[16:] // strip "Distributor ID:"
-	return strings.Replace(string(distro), "\n", "", -1)
+	return strings.Replace(string(output), "\n", "", -1)
 }
 
 func get_uptime() string {

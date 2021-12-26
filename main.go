@@ -12,13 +12,13 @@ import (
 )
 
 type Config struct {
-	separator string `yaml:"separator"`
-	distro    string `yaml:"distro"`
+	Separator string `yaml:"Separator"`
+	Distro    string `yaml:"Distro"`
 }
 
 type Colors struct {
-	main  string
-	reset string
+	main string
+	cpu  string
 }
 
 func load_config() Config {
@@ -68,12 +68,21 @@ func get_desktop_env() string {
 	return de
 }
 
-func get_cpu() string {
+func get_cpu(clrs Colors) (string, Colors) {
 	cpu_name := cpuid.CPU.BrandName
 	cpu_name = strings.Replace(cpu_name, "(R)", "", -1)
 	cpu_name = strings.Replace(cpu_name, "(TM)", "", -1)
 
-	return fmt.Sprint(cpu_name)
+	switch cpuid.CPU.VendorString {
+	case "Intel":
+		clrs.cpu = "\033[34m"
+	case "AuthenticAMD":
+		clrs.cpu = "\033[31m"
+	default:
+		clrs.cpu = "\033[0m"
+	}
+
+	return fmt.Sprint(cpu_name), clrs
 }
 
 func get_distro() string {
@@ -102,13 +111,13 @@ func get_colors(distro string) Colors {
 		fmt.Println("err")
 	}
 
-	clrs.reset = "\033[0m"
-
 	return clrs
 }
 
-func color_print(col Colors, text string) string {
-	return fmt.Sprintf("%s%s%s", col.main, text, col.reset)
+func color_print(color string, text string) string {
+	col_reset := "\033[0m"
+
+	return fmt.Sprintf("%s%s%s", color, text, col_reset)
 }
 
 func main() {
@@ -117,8 +126,8 @@ func main() {
 
 	var colors Colors
 
-	if config.distro != "" {
-		colors = get_colors(config.distro)
+	if config.Distro != "" {
+		colors = get_colors(config.Distro)
 	} else {
 		colors = get_colors(distro)
 	}
@@ -126,10 +135,10 @@ func main() {
 	user := get_username()
 	host := get_hostname()
 	desktop_environment := get_desktop_env()
-	cpu := get_cpu()
+	cpu, colors := get_cpu(colors)
 
-	fmt.Printf("distro %s %s\n", config.separator, color_print(colors, distro))
-	fmt.Printf("host %s %s@%s\n", config.separator, color_print(colors, user), color_print(colors, host))
-	fmt.Printf("de %s %s\n", config.separator, desktop_environment)
-	fmt.Printf("cpu %s %s\n", config.separator, cpu)
+	fmt.Printf("distro %s %s\n", config.Separator, color_print(colors.main, distro))
+	fmt.Printf("host %s %s@%s\n", config.Separator, color_print(colors.main, user), color_print(colors.main, host))
+	fmt.Printf("de %s %s\n", config.Separator, desktop_environment)
+	fmt.Printf("cpu %s %s\n", config.Separator, color_print(colors.cpu, cpu))
 }

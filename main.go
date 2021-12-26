@@ -21,7 +21,13 @@ type Colors struct {
 
 func load_config() Config {
 	var cfg Config
-	file := "cfg.yml"
+
+	cfg_dir, err := os.UserConfigDir()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	file := cfg_dir + "/gofetch/gofetch.yml"
 	f, err := os.Open(file)
 
 	if os.IsNotExist(err) {
@@ -38,10 +44,6 @@ func load_config() Config {
 	err = decoder.Decode(&cfg)
 	if err != nil {
 		fmt.Println(err)
-	}
-
-	if cfg.Separator == "" {
-		cfg.Separator = ":"
 	}
 
 	return cfg

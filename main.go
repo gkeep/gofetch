@@ -13,7 +13,7 @@ import (
 
 type Config struct {
 	Separator string `yaml:"Separator"`
-	Distro    string `yaml:"Distro"`
+	Distro    string `yaml:"DistroOverride"`
 }
 
 type Colors struct {
@@ -97,6 +97,17 @@ func get_distro() string {
 	return strings.Replace(string(distro), "\n", "", -1)
 }
 
+func get_uptime() string {
+	command := exec.Command("/usr/bin/uptime", "-p")
+
+	uptime, err := command.Output()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return strings.Replace(string(uptime), "\n", "", -1)
+}
+
 func get_colors(distro string) Colors {
 	var clrs Colors
 
@@ -136,9 +147,11 @@ func main() {
 	host := get_hostname()
 	desktop_environment := get_desktop_env()
 	cpu, colors := get_cpu(colors)
+	uptime := get_uptime()
 
 	fmt.Printf("distro %s %s\n", config.Separator, color_print(colors.main, distro))
 	fmt.Printf("host %s %s@%s\n", config.Separator, color_print(colors.main, user), color_print(colors.main, host))
 	fmt.Printf("de %s %s\n", config.Separator, desktop_environment)
 	fmt.Printf("cpu %s %s\n", config.Separator, color_print(colors.cpu, cpu))
+	fmt.Printf("uptime %s %s\n", config.Separator, uptime)
 }

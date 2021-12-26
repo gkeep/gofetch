@@ -129,8 +129,6 @@ func get_colors(distro string) Colors {
 		clrs.main = "\033[1;34m" // light blue
 	case "fedora":
 		clrs.main = "\033[34m" // blue
-	default:
-		fmt.Println("err")
 	}
 
 	return clrs

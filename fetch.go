@@ -41,21 +41,21 @@ func get_desktop_env() string {
 	return de
 }
 
-func get_cpu(clrs Colors) (string, Colors) {
+func get_cpu() (string, string) {
 	cpu_name := cpuid.CPU.BrandName
 	cpu_name = strings.Replace(cpu_name, "(R)", "", -1)
 	cpu_name = strings.Replace(cpu_name, "(TM)", "", -1)
 
+	var color string = "\033[0m"
+
 	switch cpuid.CPU.VendorString {
 	case "GenuineIntel":
-		clrs.cpu = "\033[34m"
+		color = "\033[34m"
 	case "AuthenticAMD":
-		clrs.cpu = "\033[31m"
-	default:
-		clrs.cpu = "\033[0m"
+		color = "\033[31m"
 	}
 
-	return fmt.Sprint(cpu_name), clrs
+	return fmt.Sprint(cpu_name), color
 }
 
 func get_distro() string {

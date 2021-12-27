@@ -78,7 +78,29 @@ func get_distro() string {
 		}
 	}
 
-	return distro
+	return strings.ToLower(distro)
+}
+
+func get_pkg_count(distro string) string {
+	var cmd []string
+
+	switch distro {
+	case "debian":
+		cmd = strings.Split("/usr/bin/dpkg --list", " ")
+	case "fedora":
+		cmd = strings.Split("/usr/bin/dnf list installed", " ")
+	case "arch":
+		cmd = strings.Split("/usr/bin/pacman -Q", " ")
+	}
+
+	command := exec.Command(cmd[0], cmd[1], cmd[2])
+	output, err := command.Output()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	pkg_count := len(strings.Split(string(output), "\n"))
+	return fmt.Sprint(pkg_count)
 }
 
 func get_uptime() string {

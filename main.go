@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"gopkg.in/yaml.v2"
 )
@@ -60,7 +59,7 @@ func load_config() Config {
 func get_colors(distro string) Colors {
 	var clrs Colors
 
-	switch strings.ToLower(distro) {
+	switch distro {
 	case "debian":
 		clrs.main = "\033[31m"     // red
 		clrs.secondary = "\033[1m" // white
@@ -110,9 +109,9 @@ func main() {
 	data, cpu_color := fetch()
 	colors.cpu = cpu_color
 
-	info_list := [5]string{"distro", "host", "de", "cpu", "uptime"}
+	info_list := [6]string{"distro", "host", "cpu", "packages", "de", "uptime"}
 
-	for i := 0; i < 5; i++ {
+	for i := 0; i < len(info_list); i++ {
 		var template string
 
 		switch info_list[i] {
@@ -126,6 +125,8 @@ func main() {
 			template = color_print(colors.cpu, data.cpu)
 		case "uptime":
 			template = data.uptime
+		case "packages":
+			template = get_pkg_count(distro)
 		}
 
 		fmt.Printf("%s %s %s\n", color_print(colors.secondary, info_list[i]),

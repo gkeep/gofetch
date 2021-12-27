@@ -91,6 +91,8 @@ func get_pkg_count(distro string) string {
 		cmd = strings.Split("/usr/bin/dnf list installed", " ")
 	case "arch":
 		cmd = strings.Split("/usr/bin/pacman -Q", " ")
+	default:
+		return "unknown"
 	}
 
 	command := exec.Command(cmd[0])

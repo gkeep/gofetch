@@ -93,7 +93,11 @@ func get_pkg_count(distro string) string {
 		cmd = strings.Split("/usr/bin/pacman -Q", " ")
 	}
 
-	command := exec.Command(cmd[0], cmd[1], cmd[2])
+	command := exec.Command(cmd[0])
+	for i := 1; i < len(cmd); i++ {
+		command.Args = append(command.Args, cmd[i])
+	}
+
 	output, err := command.Output()
 	if err != nil {
 		fmt.Println(err)
